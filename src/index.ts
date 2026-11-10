@@ -240,7 +240,7 @@ app.get("/", async (c) => {
   const db = c.env.DB;
   const user = c.get("user");
   const [productsRes, projectsRes, blogsRes] = await Promise.all([
-    db.prepare("SELECT * FROM products ORDER BY is_featured DESC, id ASC").all<Product>(),
+    db.prepare("SELECT * FROM products ORDER BY id DESC").all<Product>(),
     db.prepare("SELECT * FROM projects ORDER BY id ASC").all<Project>(),
     db.prepare("SELECT * FROM blog_posts ORDER BY id DESC").all<BlogPost>(),
   ]);
@@ -307,7 +307,7 @@ app.get("/products/", async (c) => {
   const searchQ = c.req.query("q") || "";
 
   const productsRes = await db
-    .prepare("SELECT * FROM products ORDER BY is_featured DESC, id ASC")
+    .prepare("SELECT * FROM products ORDER BY id DESC")
     .all<Product>();
 
   let savedProductIds: number[] = [];
@@ -835,19 +835,28 @@ app.get("/dashboard/", async (c) => {
     .bind(user.email.toLowerCase())
     .all<Order>();
 
+  const successParam = c.req.query("success") || "";
+  const errorParam = c.req.query("error") || "";
+  let message = "";
+  let errorMsg = "";
+  if (successParam === "product_added") message = "প্রোডাক্ট সফলভাবে যুক্ত করা হয়েছে!";
+  if (successParam === "product_deleted") message = "প্রোডাক্টটি সফলভাবে মুছে ফেলা হয়েছে।";
+  if (errorParam === "title_required") errorMsg = "প্রোডাক্টের নাম প্রদান করা বাধ্যতামূলক।";
+
+  let allProducts: Product[] = [];
   let allOrders: Order[] = [];
   let allLeads: Contact[] = [];
   let totalSpins = 0;
 
   if (user.role === "admin") {
-    const [allOrd, allLd, spCnt] = await Promise.all([
+    const [allProd, allOrd, allLd] = await Promise.all([
+      db.prepare("SELECT * FROM products ORDER BY id DESC").all<Product>(),
       db.prepare("SELECT * FROM orders ORDER BY id DESC").all<Order>(),
       db.prepare("SELECT * FROM contacts ORDER BY id DESC").all<Contact>(),
-      db.prepare("SELECT COUNT(*) as count FROM spins").first<{ count: number }>(),
     ]);
+    allProducts = allProd.results || [];
     allOrders = allOrd.results || [];
     allLeads = allLd.results || [];
-    totalSpins = spCnt?.count || 0;
   }
 
   const html = layout({
@@ -860,14 +869,71 @@ app.get("/dashboard/", async (c) => {
       libraryProducts: libRes.results || [],
       allFreeProducts: allFreeRes.results || [],
       userOrders: userOrdersRes.results || [],
+      allProducts,
       allOrders,
       allLeads,
       totalSpins,
       activeTab: tab,
+      message,
+      error: errorMsg,
     }),
   });
 
   return c.html(html);
+});
+
+// ── Admin Product Management ────────────────────────────────────────────────
+app.post("/admin/products/add", async (c) => {
+  const user = c.get("user");
+  if (!user || user.role !== "admin") {
+    return c.redirect("/auth/login?next=/dashboard/?tab=admin-products");
+  }
+
+  const db = c.env.DB;
+  const body = await c.req.parseBody();
+  const title = (body.title as string)?.trim();
+  const category = (body.category as string)?.trim() || "ইবুক";
+  const description = (body.description as string)?.trim() || "";
+  const download_url = (body.download_url as string)?.trim() || "";
+
+  if (!title) {
+    return c.redirect("/dashboard/?tab=admin-products&error=title_required");
+  }
+
+  // Generate unique slug
+  const baseSlug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\u0980-\u09FF]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "product";
+  const uniqueSlug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
+
+  await db
+    .prepare(
+      `INSERT INTO products (slug, title, category, description, download_url, price, discounted_price, cover_image, is_featured)
+       VALUES (?, ?, ?, ?, ?, 0, 0, ?, 1)`
+    )
+    .bind(uniqueSlug, title, category, description, download_url, download_url)
+    .run();
+
+  return c.redirect("/dashboard/?tab=admin-products&success=product_added");
+});
+
+app.post("/admin/products/delete", async (c) => {
+  const user = c.get("user");
+  if (!user || user.role !== "admin") {
+    return c.redirect("/auth/login?next=/dashboard/?tab=admin-products");
+  }
+
+  const db = c.env.DB;
+  const body = await c.req.parseBody();
+  const productId = parseInt(body.productId as string, 10);
+
+  if (productId) {
+    await db.prepare("DELETE FROM products WHERE id = ?").bind(productId).run();
+    await db.prepare("DELETE FROM user_library WHERE product_id = ?").bind(productId).run();
+  }
+
+  return c.redirect("/dashboard/?tab=admin-products&success=product_deleted");
 });
 
 // ── REST API Endpoints ──────────────────────────────────────────────────────

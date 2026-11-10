@@ -69,6 +69,146 @@ export function layout({
     .brand-accent {
       color: #7c6af7;
     }
+
+    /* notabene.saas Digital Product Cards (Matched directly to user screenshot) */
+    .nb-prod-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 960px) {
+      .nb-prod-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+    }
+    @media (max-width: 600px) {
+      .nb-prod-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+    .nb-prod-card {
+      background: #0d1527;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      height: 100%;
+      position: relative;
+    }
+    .nb-prod-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+      border-color: rgba(124, 106, 247, 0.4);
+    }
+    .nb-prod-card__top {
+      min-height: 145px;
+      background: linear-gradient(180deg, #121c32 0%, #0c1526 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .nb-prod-card__title {
+      font-family: 'Hind Siliguri', sans-serif;
+      font-size: 21px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+      line-height: 1.35;
+      letter-spacing: -0.2px;
+    }
+    .nb-prod-card__bottom {
+      padding: 20px 22px 24px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      background: #0d1527;
+    }
+    .nb-prod-card__meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .nb-prod-card__badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 12px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      font-size: 11.5px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .nb-prod-card__date {
+      font-size: 12px;
+      color: #64748b;
+      font-family: 'Hind Siliguri', sans-serif;
+    }
+    .nb-prod-card__desc {
+      font-size: 13.5px;
+      color: #94a3b8;
+      line-height: 1.65;
+      margin: 0 0 18px;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .nb-prod-card__actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: auto;
+    }
+    .nb-btn-download {
+      flex: 1;
+      background: #7c6af7;
+      color: #ffffff !important;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+      transition: background 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .nb-btn-download:hover {
+      background: #6a57e3;
+    }
+    .nb-btn-save {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .nb-btn-save:hover {
+      background: rgba(124, 106, 247, 0.15);
+      border-color: #7c6af7;
+      color: #ffffff;
+    }
   </style>
 </head>
 <body>

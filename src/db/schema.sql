@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS products (
   badge TEXT DEFAULT '',
   rating REAL DEFAULT 4.9,
   is_featured INTEGER DEFAULT 0,
+  download_url TEXT DEFAULT '',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

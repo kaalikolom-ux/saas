@@ -1,4 +1,5 @@
 import { Product, Project, BlogPost, User } from "../types";
+import { renderProductCard } from "../utils/cards";
 
 export interface HomeProps {
   products: Product[];
@@ -8,8 +9,8 @@ export interface HomeProps {
 }
 
 export function homeView({ products, projects, blogs, user = null }: HomeProps): string {
-  const featuredProducts = products.filter((p) => p.is_featured || p.price > 0).slice(0, 6);
-  const freeProducts = products.filter((p) => p.discounted_price === 0).slice(0, 4);
+  const featuredProducts = products.slice(0, 6);
+  const freeProducts = products.filter((p) => p.discounted_price === 0).slice(0, 6);
 
   return `
 <!-- HERO -->
@@ -86,41 +87,8 @@ export function homeView({ products, projects, blogs, user = null }: HomeProps):
       </div>
       <a href="/products/" class="va">সবগুলো প্রোডাক্ট দেখুন →</a>
     </div>
-    <div class="pdg">
-      ${featuredProducts
-        .map(
-          (p) => `
-        <div class="pdc rv" style="position:relative">
-          <button type="button" class="bundle-toggle" data-bundle-toggle
-                  data-bundle-type="product" data-bundle-slug="${p.slug}"
-                  data-bundle-title="${escapeHtml(p.title)}" data-bundle-price="${p.discounted_price}"
-                  aria-label="Add ${escapeHtml(p.title)} to bundle">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          </button>
-          <a href="/products/${p.slug}/" style="display:block;text-decoration:none;color:inherit">
-            <div class="pdcv pc1">
-              <img src="${p.cover_image}" alt="${escapeHtml(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">
-            </div>
-            <div class="pdb">
-              <div class="pdn">${escapeHtml(p.title)}</div>
-              <div class="pdt">${escapeHtml(p.description || "")}</div>
-              <div class="pdf">
-                <span>
-                  ${
-                    p.price > p.discounted_price
-                      ? `<span style="font-size:.8em;color:var(--tx3);text-decoration:line-through;margin-right:6px">৳${p.price}</span>`
-                      : ""
-                  }
-                  <span class="pdp">৳${p.discounted_price}</span>
-                </span>
-                <span class="buyb">Buy Now</span>
-              </div>
-            </div>
-          </a>
-        </div>
-      `
-        )
-        .join("")}
+    <div class="nb-prod-grid">
+      ${featuredProducts.map((p) => renderProductCard(p)).join("")}
     </div>
   </div>
 </section>
@@ -135,29 +103,11 @@ export function homeView({ products, projects, blogs, user = null }: HomeProps):
       </div>
       <a href="/products/?price=free" class="va">সকল ফ্রি আইটেম →</a>
     </div>
-    <div class="pdg">
-      ${freeProducts
-        .map(
-          (p) => `
-        <div class="pdc rv">
-          <a href="/products/${p.slug}/" style="display:block;text-decoration:none;color:inherit">
-            <div class="pdcv pc2">
-              <img src="${p.cover_image}" alt="${escapeHtml(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">
-            </div>
-            <div class="pdb">
-              <div class="pdn">${escapeHtml(p.title)}</div>
-              <div class="pdt">${escapeHtml(p.description || "")}</div>
-              <div class="pdf">
-                <span class="pdp" style="color:#16a34a">ফ্রি</span>
-                <span class="buyb" style="background:#16a34a;color:#fff">ডাউনলোড / সেভ</span>
-              </div>
-            </div>
-          </a>
-        </div>
-      `
-        )
-        .join("")}
+    <div class="nb-prod-grid">
+      ${freeProducts.map((p) => renderProductCard(p)).join("")}
     </div>
+  </div>
+</section>
   </div>
 </section>
 

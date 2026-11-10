@@ -1,4 +1,5 @@
 import { Product, User } from "../types";
+import { renderProductCard } from "../utils/cards";
 
 export interface ProductsViewProps {
   products: Product[];
@@ -92,79 +93,8 @@ export function productsView({
   </form>
 
   <div class="pp-wrap ppl-shell" id="pplResults">
-    <div class="ppl-grid">
-      ${filtered
-        .map((p, idx) => {
-          const discountPct = p.price > p.discounted_price ? Math.round(((p.price - p.discounted_price) / p.price) * 100) : 0;
-          const isSaved = savedProductIds.includes(p.id);
-
-          return `
-        <article class="ppl-card ${idx === 0 ? "ppl-card--wide" : ""} pp-rv" style="--i:${idx}">
-          <div class="ppl-card__media">
-            <img src="${p.cover_image}" alt="${escapeHtml(p.title)}" width="640" height="360" loading="lazy" decoding="async">
-            <span class="ppl-tag">${p.category || "Ebook / PDF"}</span>
-            ${
-              discountPct > 0
-                ? `<span class="ppl-flags"><span class="ppl-flag">−${discountPct}%</span></span>`
-                : p.discounted_price === 0
-                ? `<span class="ppl-flags"><span class="ppl-flag" style="background:#16a34a">ফ্রি</span></span>`
-                : ""
-            }
-            
-            ${
-              p.discounted_price > 0
-                ? `
-            <label class="bundle-toggle" data-bundle-toggle data-item-type="product"
-                   data-item-slug="${p.slug}" data-item-title="${escapeHtml(p.title)}"
-                   data-item-price="${p.discounted_price}"
-                   data-tooltip="কার্টে যোগ করো">
-              <input type="checkbox" aria-label="${escapeHtml(p.title)} — কার্টে যোগ করো">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-            </label>
-            `
-                : ""
-            }
-          </div>
-          <div class="ppl-card__body">
-            <p class="pp-kicker">${p.badge || (p.discounted_price === 0 ? "ফ্রি রিসোর্স" : "ডিজিটাল প্রোডাক্ট")}</p>
-            <h3 class="ppl-card__title">
-              <a class="ppl-card__link" href="/products/${p.slug}/">${escapeHtml(p.title)}</a>
-            </h3>
-            <p class="ppl-card__desc">${escapeHtml(p.description || "")}</p>
-            
-            <div class="ppl-card__foot">
-              <div class="ppl-price">
-                ${
-                  p.discounted_price === 0
-                    ? `<b>ফ্রি</b>`
-                    : `<b>৳${p.discounted_price}</b>${p.price > p.discounted_price ? `<s>৳${p.price}</s>` : ""}`
-                }
-              </div>
-
-              <div style="display:flex;gap:8px;align-items:center">
-                ${
-                  p.discounted_price === 0
-                    ? `
-                  <form method="post" action="/api/library/add">
-                    <input type="hidden" name="product_id" value="${p.id}">
-                    <button type="submit" class="pp-btn ${isSaved ? "pp-btn--ghost" : "pp-btn--primary"}" style="padding:6px 12px;font-size:12px;font-weight:700">
-                      ${isSaved ? "✓ সেভ করা আছে" : "📥 লাইব্রেরিতে সেভ"}
-                    </button>
-                  </form>
-                `
-                    : ""
-                }
-                <a class="ppl-cta" href="/products/${p.slug}/">
-                  বিস্তারিত
-                  <svg class="pp-ic pp-ic--sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-                </a>
-              </div>
-            </div>
-          </div>
-        </article>
-      `;
-        })
-        .join("")}
+    <div class="nb-prod-grid">
+      ${filtered.map((p) => renderProductCard(p, savedProductIds.includes(p.id))).join("")}
     </div>
   </div>
 

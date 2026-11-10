@@ -1,14 +1,18 @@
 import { User, Product, Order, Contact } from "../types";
+import { formatBengaliDate } from "../utils/cards";
 
 export interface DashboardViewProps {
   user: User;
   libraryProducts: Product[];
   allFreeProducts: Product[];
   userOrders: Order[];
+  allProducts?: Product[];
   allOrders?: Order[];
   allLeads?: Contact[];
   totalSpins?: number;
   activeTab?: string;
+  message?: string;
+  error?: string;
 }
 
 export function dashboardView({
@@ -16,10 +20,13 @@ export function dashboardView({
   libraryProducts,
   allFreeProducts,
   userOrders,
+  allProducts = [],
   allOrders = [],
   allLeads = [],
   totalSpins = 0,
   activeTab = "library",
+  message = "",
+  error = "",
 }: DashboardViewProps): string {
   const uncollectedFree = allFreeProducts.filter(
     (fp) => !libraryProducts.some((lp) => lp.id === fp.id)
@@ -76,6 +83,11 @@ export function dashboardView({
         user.role === "admin"
           ? `
       <div class="dash-nav-group-title" style="margin-top:20px;color:#a78bfa">👑 অ্যাডমিন প্যানেল</div>
+      <a href="/dashboard/?tab=admin-products" class="dash-nav-item ${activeTab === "admin-products" ? "is-active" : ""}">
+        <span class="dash-nav-icon">➕</span>
+        <span>প্রোডাক্ট যোগ করুন</span>
+        <span class="dash-nav-pill" style="background:#7c6af7">${allProducts.length}</span>
+      </a>
       <a href="/dashboard/?tab=admin" class="dash-nav-item ${activeTab === "admin" ? "is-active" : ""}">
         <span class="dash-nav-icon">📊</span>
         <span>এনালিটিক্স</span>
@@ -107,7 +119,7 @@ export function dashboardView({
     
     <!-- TOP BAR -->
     <header class="dash-topbar">
-      <h1 class="dash-top-heading">${activeTab === "admin" ? "অ্যাডমিন এনালিটিক্স" : activeTab === "orders" ? "আমার অর্ডারসমূহ" : activeTab === "admin-leads" ? "গ্রাহক লিডস ও বার্তা" : "আমার লাইব্রেরি"}</h1>
+      <h1 class="dash-top-heading">${activeTab === "admin-products" ? "ডিজিটাল প্রোডাক্ট ম্যানেজমেন্ট" : activeTab === "admin" ? "অ্যাডমিন এনালিটিক্স" : activeTab === "orders" ? "আমার অর্ডারসমূহ" : activeTab === "admin-leads" ? "গ্রাহক লিডস ও বার্তা" : "আমার লাইব্রেরি"}</h1>
       
       <div class="dash-topbar-actions">
         <div class="dash-lang-pill">
@@ -209,22 +221,25 @@ export function dashboardView({
     ${
       libraryProducts.length > 0
         ? `
-    <div class="dash-lib-grid">
+    <div class="nb-prod-grid">
       ${libraryProducts
         .map(
           (p) => `
-        <article class="dash-product-card">
-          <div class="dash-prod-media">
-            <img src="${p.cover_image}" alt="${escapeHtml(p.title)}" loading="lazy">
-            <span class="dash-prod-tag">${p.category || "Ebook / PDF"}</span>
+        <article class="nb-prod-card">
+          <div class="nb-prod-card__top">
+            <h4 class="nb-prod-card__title">${escapeHtml(p.title)}</h4>
           </div>
-          <div class="dash-prod-body">
-            <h4 class="dash-prod-title">${escapeHtml(p.title)}</h4>
-            <div class="dash-prod-actions">
-              <a href="${p.cover_image}" download class="dash-btn-primary">
-                📥 ডাউনলোড PDF
+          <div class="nb-prod-card__bottom">
+            <div class="nb-prod-card__meta">
+              <span class="nb-prod-card__badge">${escapeHtml(p.category || "ডিজিটাল")}</span>
+              <span class="nb-prod-card__date">${formatBengaliDate(p.created_at)}</span>
+            </div>
+            <p class="nb-prod-card__desc">${escapeHtml(p.description || "ডিজিটাল প্রোডাক্ট সংগ্রহ করুন ও ডাউনলোড করুন।")}</p>
+            <div class="nb-prod-card__actions">
+              <a href="${escapeHtml(p.download_url || p.cover_image || "#")}" download target="_blank" rel="noopener" class="nb-btn-download">
+                📥 ডাউনলোড
               </a>
-              <a href="/products/${p.slug}/" class="dash-btn-outline" title="বিস্তারিত">
+              <a href="/products/${p.slug}/" class="nb-btn-save" title="বিস্তারিত">
                 📖 পড়ুন
               </a>
             </div>
@@ -288,6 +303,115 @@ export function dashboardView({
       `
           : `<p style="color:var(--tx3);font-size:14px;margin:0">আপনার এখনও কোনো অর্ডারের রেকর্ড নেই।</p>`
       }
+    </div>
+    `
+        : ""
+    }
+
+    <!-- TAB: ADMIN PRODUCTS MANAGEMENT -->
+    ${
+      activeTab === "admin-products" && user.role === "admin"
+        ? `
+    <div style="margin-top:10px">
+      ${
+        message
+          ? `<div style="background:rgba(34,197,94,0.12);border:1px solid #16a34a;color:#16a34a;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-weight:600">✓ ${escapeHtml(message)}</div>`
+          : ""
+      }
+      ${
+        error
+          ? `<div style="background:rgba(239,68,68,0.12);border:1px solid #ef4444;color:#ef4444;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-weight:600">⚠️ ${escapeHtml(error)}</div>`
+          : ""
+      }
+
+      <div style="background:#12161f;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;box-shadow:0 8px 30px rgba(0,0,0,0.3);margin-bottom:32px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:16px">
+          <div style="width:42px;height:42px;border-radius:10px;background:rgba(124,106,247,0.15);color:#7c6af7;display:flex;align-items:center;justify-content:center;font-size:22px">📦</div>
+          <div>
+            <h2 style="font-size:19px;font-weight:700;margin:0;color:#ffffff">নতুন ডিজিটাল প্রোডাক্ট যুক্ত করুন</h2>
+            <p style="font-size:13px;color:#8b949e;margin:3px 0 0">প্রোডাক্টের নাম, ক্যাটাগরি, বিবরণী ও ডাউনলোড লিঙ্ক দিয়ে সহজেই পাবলিশ করুন</p>
+          </div>
+        </div>
+
+        <form method="post" action="/admin/products/add" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          
+          <!-- ১। প্রোডাক্টের নাম -->
+          <div style="grid-column: span 1">
+            <label style="display:block;font-size:13.5px;font-weight:600;margin-bottom:8px;color:#cbd5e1">
+              ১। প্রোডাক্টের নাম <span style="color:#ef4444">*</span>
+            </label>
+            <input type="text" name="title" required placeholder="উদা: আলাদা আকাশ বা পাইথন অটোমেশন গাইড" style="width:100%;box-sizing:border-box;padding:12px 14px;background:#0d1117;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#ffffff;font-size:14px">
+          </div>
+
+          <!-- ২। ক্যাটাগরি -->
+          <div style="grid-column: span 1">
+            <label style="display:block;font-size:13.5px;font-weight:600;margin-bottom:8px;color:#cbd5e1">
+              ২। ক্যাটাগরি <span style="color:#ef4444">*</span>
+            </label>
+            <input type="text" name="category" required placeholder="উদা: কবিতা, ইবুক, প্লাগিন্স, টেমপ্লেট" value="কবিতা" style="width:100%;box-sizing:border-box;padding:12px 14px;background:#0d1117;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#ffffff;font-size:14px">
+          </div>
+
+          <!-- ৩। বিবরণী -->
+          <div style="grid-column: span 2">
+            <label style="display:block;font-size:13.5px;font-weight:600;margin-bottom:8px;color:#cbd5e1">
+              ৩। বিবরণী <span style="color:#ef4444">*</span>
+            </label>
+            <textarea name="description" rows="3" required placeholder="প্রোডাক্টের সংক্ষিপ্ত বিবরণী লিখুন..." style="width:100%;box-sizing:border-box;padding:12px 14px;background:#0d1117;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#ffffff;font-size:14px;font-family:inherit;resize:vertical"></textarea>
+          </div>
+
+          <!-- ৪। ডাউনলোড লিঙ্ক -->
+          <div style="grid-column: span 2">
+            <label style="display:block;font-size:13.5px;font-weight:600;margin-bottom:8px;color:#cbd5e1">
+              ৪। ডাউনলোড লিঙ্ক <span style="color:#ef4444">*</span>
+            </label>
+            <input type="url" name="download_url" required placeholder="https://drive.google.com/... বা ফাইলের ডাউনলোড লিঙ্ক" style="width:100%;box-sizing:border-box;padding:12px 14px;background:#0d1117;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#ffffff;font-size:14px">
+          </div>
+
+          <div style="grid-column: span 2;display:flex;justify-content:flex-end;margin-top:4px">
+            <button type="submit" class="dash-btn-primary" style="padding:12px 28px;font-size:14px;font-weight:700;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px">
+              <span>➕ প্রোডাক্ট পাবলিশ করুন</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div style="margin-top:28px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h3 style="font-size:18px;font-weight:700;margin:0;color:#ffffff">লাইভ ডিজিটাল প্রোডাক্টসমূহ (${allProducts.length}টি)</h3>
+          <a href="/products/" target="_blank" class="dash-link">সব প্রোডাক্ট পেইজ দেখুন ↗</a>
+        </div>
+        <div class="nb-prod-grid">
+          ${allProducts
+            .map(
+              (p) => `
+            <div class="nb-prod-card">
+              <div class="nb-prod-card__top">
+                <h4 class="nb-prod-card__title">${escapeHtml(p.title)}</h4>
+              </div>
+              <div class="nb-prod-card__bottom">
+                <div class="nb-prod-card__meta">
+                  <span class="nb-prod-card__badge">${escapeHtml(p.category || "ডিজিটাল")}</span>
+                  <span class="nb-prod-card__date">${formatBengaliDate(p.created_at)}</span>
+                </div>
+                <p class="nb-prod-card__desc">${escapeHtml(p.description || "ডিজিটাল প্রোডাক্ট")}</p>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:auto">
+                  <a href="${escapeHtml(p.download_url || "#")}" download target="_blank" rel="noopener" class="nb-btn-download" style="font-size:12px;padding:7px 12px">
+                    📥 ডাউনলোড
+                  </a>
+                  <form method="post" action="/admin/products/delete" onsubmit="return confirm('আপনি কি নিশ্চিত এই প্রোডাক্টটি মুছে ফেলতে চান?');" style="margin:0">
+                    <input type="hidden" name="productId" value="${p.id}">
+                    <button type="submit" style="padding:7px 12px;color:#ef4444;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.1);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">
+                      🗑️ মুছুন
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+      </div>
     </div>
     `
         : ""
