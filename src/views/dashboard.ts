@@ -322,10 +322,10 @@ export function dashboardView({
         </div>
         <div class="dash-stat-card">
           <div class="dash-stat-left">
-            <div class="dash-stat-num">${totalSpins}</div>
-            <div class="dash-stat-lbl">মোট স্পিন</div>
+            <div class="dash-stat-num">${allOrders.length}</div>
+            <div class="dash-stat-lbl">সফল অর্ডার</div>
           </div>
-          <div class="dash-stat-icon-wrap" style="background:rgba(234,88,12,.15);color:#ea580c">🎡</div>
+          <div class="dash-stat-icon-wrap" style="background:rgba(234,88,12,.15);color:#ea580c">📦</div>
         </div>
       </div>
 

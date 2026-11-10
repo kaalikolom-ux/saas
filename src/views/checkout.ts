@@ -64,7 +64,7 @@ export function checkoutView({ items, spinDiscountPercent = 0 }: CheckoutViewPro
             spinDiscountPercent > 0
               ? `
           <li style="display:flex;justify-content:space-between;margin-bottom:8px;color:#16a34a;font-weight:600">
-            <span>স্পিনের বিশেষ ছাড় (${spinDiscountPercent}%)</span>
+            <span>বিশেষ ছাড় (${spinDiscountPercent}%)</span>
             <span>−৳${spinDiscountAmount}</span>
           </li>
           `

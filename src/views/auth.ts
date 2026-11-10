@@ -7,7 +7,7 @@ export interface AuthProps {
 
 export function loginView({ error = "", success = "", email = "", next = "/dashboard/" }: AuthProps): string {
   return `
-<div class="container" style="max-width:440px;padding:60px 20px">
+<div class="container" style="max-width:440px;padding:100px 20px 60px">
   <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:16px;padding:36px;box-shadow:0 12px 40px rgba(0,0,0,.35)">
     
     <div style="text-align:center;margin-bottom:24px">
@@ -65,7 +65,7 @@ export function loginView({ error = "", success = "", email = "", next = "/dashb
 
 export function registerView({ error = "", name = "", email = "" }: AuthProps & { name?: string }): string {
   return `
-<div class="container" style="max-width:440px;padding:60px 20px">
+<div class="container" style="max-width:440px;padding:100px 20px 60px">
   <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:16px;padding:36px;box-shadow:0 12px 40px rgba(0,0,0,.35)">
     
     <div style="text-align:center;margin-bottom:24px">

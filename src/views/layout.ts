@@ -7,6 +7,7 @@ export interface LayoutProps {
   activeNav?: string;
   user?: User | null;
   content: string;
+  hideNavAndFooter?: boolean;
 }
 
 export function layout({
@@ -16,6 +17,7 @@ export function layout({
   activeNav = "",
   user = null,
   content,
+  hideNavAndFooter = false,
 }: LayoutProps): string {
   return `<!DOCTYPE html>
 <html lang="bn" data-theme="dark">
@@ -35,7 +37,6 @@ export function layout({
   <meta name="twitter:card" content="summary_large_image">
   
   <link rel="stylesheet" href="/static/css/main.css?v=1794073230">
-  <link rel="stylesheet" href="/static/css/pp_spinner.css?v=1791912745">
   <link rel="stylesheet" href="/static/css/product_premium.css?v=1794072261">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,6 +64,7 @@ export function layout({
       background: linear-gradient(135deg, #7c6af7, #2dd4bf);
       box-shadow: 0 0 10px rgba(124,106,247,0.6);
       display: inline-block;
+      flex-shrink: 0;
     }
     .brand-accent {
       color: #7c6af7;
@@ -71,87 +73,99 @@ export function layout({
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="hdr">
-    <div class="hwrap">
-      <a href="/" class="brand-text-logo">
-        <span class="brand-badge-dot"></span>
-        <span>notabene<span class="brand-accent">.saas</span></span>
-      </a>
-      <nav class="nav">
-        <a href="/products/" class="nl ${activeNav === 'products' ? 'active' : ''}">ডিজিটাল প্রোডাক্ট</a>
-        <a href="/products/?price=free" class="nl ${activeNav === 'free' ? 'active' : ''}">🎁 ফ্রি সংগ্রহ</a>
-        <a href="/courses/" class="nl ${activeNav === 'courses' ? 'active' : ''}">কোর্স ও ট্রেনিং</a>
-        <a href="/projects/" class="nl ${activeNav === 'projects' ? 'active' : ''}">প্রজেক্টস</a>
-        <a href="/blog/" class="nl ${activeNav === 'blog' ? 'active' : ''}">ব্লগ</a>
-        <a href="/dashboard/" class="nl ${activeNav === 'dashboard' ? 'active' : ''}">
-          📚 লাইব্রেরি
-        </a>
-      </nav>
-      <div class="hact">
-        <button class="tht" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
-          <svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        </button>
+  ${
+    hideNavAndFooter
+      ? ""
+      : `
+  <!-- Navigation Bar -->
+  <nav class="nav-bar" id="navbar">
+    <a href="/" class="brand-text-logo">
+      <span class="brand-badge-dot"></span>
+      <span>notabene<span class="brand-accent">.saas</span></span>
+    </a>
 
-        ${
-          user
-            ? `
-          <a href="/dashboard/" class="hb" style="padding:7px 14px;display:inline-flex;align-items:center;gap:6px">
-            <span>👤 ${escapeHtml(user.name.split(" ")[0])}</span>
-          </a>
-          <a href="/auth/logout" class="bs" style="padding:7px 12px;font-size:13px" title="লগআউট">লগআউট</a>
-        `
-            : `
-          <a href="/auth/login" class="hb" style="padding:7px 16px">লগইন</a>
-        `
-        }
-
-        <button class="mb" id="menuToggle" aria-label="Toggle menu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
-      </div>
+    <div class="nl">
+      <a href="/products/" class="${activeNav === "products" ? "active" : ""}">ডিজিটাল প্রোডাক্ট</a>
+      <a href="/products/?price=free" class="${activeNav === "free" ? "active" : ""}">🎁 ফ্রি সংগ্রহ</a>
+      <a href="/courses/" class="${activeNav === "courses" ? "active" : ""}">কোর্স ও ট্রেনিং</a>
+      <a href="/projects/" class="${activeNav === "projects" ? "active" : ""}">প্রজেক্টস</a>
+      <a href="/blog/" class="${activeNav === "blog" ? "active" : ""}">ব্লগ</a>
+      <a href="/dashboard/" class="${activeNav === "dashboard" ? "active" : ""}">📚 লাইব্রেরি</a>
     </div>
-  </header>
 
-  <!-- Mobile Navigation -->
-  <div class="mnav" id="mobNav">
-    <div class="mnavi">
-      <a href="/products/" class="mnl">ডিজিটাল প্রোডাক্ট</a>
-      <a href="/products/?price=free" class="mnl">🎁 ফ্রি প্রোডাক্ট</a>
-      <a href="/courses/" class="mnl">কোর্স ও ট্রেনিং</a>
-      <a href="/projects/" class="mnl">প্রজেক্টস</a>
-      <a href="/blog/" class="mnl">ব্লগ</a>
-      <a href="/dashboard/" class="mnl">📚 লাইব্রেরি</a>
-      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bd)">
-        ${
-          user
-            ? `<div style="margin-bottom:10px;font-weight:600">👤 ${escapeHtml(user.name)}</div>
-               <a href="/auth/logout" class="bs" style="display:block;text-align:center">লগআউট</a>`
-            : `<a href="/auth/login" class="hb" style="display:block;text-align:center">লগইন করুন</a>`
-        }
-      </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+
+      ${
+        user
+          ? `
+        <a href="/dashboard/" class="nh2" title="আমার লাইব্রেরি">
+          <span class="nh2-i">👤</span>
+          <span class="nh2-t">${escapeHtml(user.name.split(" ")[0])}</span>
+        </a>
+        <a href="/auth/logout" class="bs" style="padding:7px 14px;font-size:13px" title="লগআউট">লগআউট</a>
+      `
+          : `
+        <a href="/auth/login" class="nh">লগইন করুন</a>
+      `
+      }
+
+      <button class="hb" id="hbtn" aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu Drawer -->
+  <div class="mm" id="mmenu">
+    <a href="/products/" class="${activeNav === "products" ? "active" : ""}" onclick="window.cmm&&window.cmm()">ডিজিটাল প্রোডাক্ট</a>
+    <a href="/products/?price=free" class="${activeNav === "free" ? "active" : ""}" onclick="window.cmm&&window.cmm()">🎁 ফ্রি সংগ্রহ</a>
+    <a href="/courses/" class="${activeNav === "courses" ? "active" : ""}" onclick="window.cmm&&window.cmm()">কোর্স ও ট্রেনিং</a>
+    <a href="/projects/" class="${activeNav === "projects" ? "active" : ""}" onclick="window.cmm&&window.cmm()">প্রজেক্টস</a>
+    <a href="/blog/" class="${activeNav === "blog" ? "active" : ""}" onclick="window.cmm&&window.cmm()">ব্লগ</a>
+    <a href="/dashboard/" class="${activeNav === "dashboard" ? "active" : ""}" onclick="window.cmm&&window.cmm()">📚 লাইব্রেরি</a>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:8px">
+      ${
+        user
+          ? `
+        <div style="padding:6px 12px;font-weight:600;color:var(--tx)">👤 ${escapeHtml(user.name)}</div>
+        <a href="/auth/logout" class="bs" style="text-align:center" onclick="window.cmm&&window.cmm()">লগআউট</a>
+      `
+          : `
+        <a href="/auth/login" class="nh" style="text-align:center" onclick="window.cmm&&window.cmm()">লগইন করুন</a>
+      `
+      }
     </div>
   </div>
+  `
+  }
 
   <!-- Main Content -->
   <main>
     ${content}
   </main>
 
+  ${
+    hideNavAndFooter
+      ? ""
+      : `
   <!-- Footer -->
   <footer class="ft">
     <div class="container">
@@ -217,99 +231,18 @@ export function layout({
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
     </button>
   </div>
-
-  <!-- Spinner Floating Pill Button -->
-  <button type="button" class="pps-pill" id="ppsPill" aria-haspopup="dialog" aria-controls="ppsDlg" aria-label="ছাড়ের চাকা খোলো">
-    <span class="pps-pill__sparkle" aria-hidden="true">🎉</span>
-    <span class="pps-pill__txt" data-pps-pill-label>স্পিন করে ছাড় নাও</span>
-    <span class="pps-pill__timer" data-pps-pill-timer><svg class="pp-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><b data-pps-clock>--:--:--</b></span>
-  </button>
-
-  <!-- Spinner Dialog Modal -->
-  <dialog class="pps-dlg" id="ppsDlg" aria-labelledby="ppsTitle">
-    <div class="pps-sheet">
-      <button type="button" class="pps-close" data-pps-close aria-label="বন্ধ করো">
-        <svg class="pp-ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-
-      <div class="pps-step" data-pps-step="wheel">
-        <p class="pp-kicker">ভাগ্যের চাকা</p>
-        <h2 class="pp-h2 pps-h" id="ppsTitle" data-pps-heading>চাকা ঘোরাও, ছাড় জেতো</h2>
-        <p class="pps-sub" data-pps-subheading>একাধিক বই একসাথে নাও, চেকআউটে ছাড় নিজে থেকেই কেটে যাবে।</p>
-        <p class="pps-timer" data-pps-timer><svg class="pp-ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>অফার শেষ হবে</span> <b data-pps-clock>--:--:--</b></p>
-        <div class="pps-wheel">
-          <svg class="pps-pointer" viewBox="0 0 40 44" aria-hidden="true"><path d="M20 42 4 8a16 16 0 1 1 32 0Z"/></svg>
-          <svg class="pps-disc" viewBox="-110 -110 220 220" role="img" aria-label="ছাড়ের চাকা"><g data-pps-rot></g></svg>
-          <button type="button" class="pps-go" data-pps-go>ঘোরাও</button>
-        </div>
-        <p class="pps-hint">চাকাটা টেনে ছেড়ে দিলেও ঘুরবে</p>
-      </div>
-
-      <div class="pps-step" data-pps-step="result" hidden>
-        <canvas class="pps-confetti" aria-hidden="true"></canvas>
-        <p class="pp-kicker" data-pps-kicker>অভিনন্দন!</p>
-        <h2 class="pp-h2 pps-h" data-pps-won tabindex="-1"></h2>
-        <p class="pps-sub" data-pps-explain></p>
-        <div class="pps-picks" data-pps-picks hidden>
-          <p class="pps-picks__h" data-pps-picks-h>যেকোনো ২টি বা বেশি বেছে নাও</p>
-          <ul class="pps-list" data-pps-list></ul>
-          <dl class="pps-sum" data-pps-sum aria-live="polite">
-            <div><dt>মোট দাম <span data-pps-count></span></dt><dd data-pps-subtotal></dd></div>
-            <div class="pps-sum__off"><dt>স্পিনের ছাড় <span data-pps-pct></span></dt><dd data-pps-off></dd></div>
-            <div class="pps-sum__total"><dt>তুমি দেবে</dt><dd data-pps-total></dd></div>
-            <p class="pps-sum__save" data-pps-save></p>
-          </dl>
-          <button type="button" class="pp-btn pp-btn--primary pp-btn--lg pp-btn--block" data-pps-buy disabled>
-            <svg class="pp-ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg><span data-pps-buylabel>এই ছাড়ে কিনে ফেলো</span>
-          </button>
-        </div>
-        <a class="pp-btn pp-btn--ghost pp-btn--block pps-soft" data-pps-soft href="/products/" hidden>প্রোডাক্টগুলো দেখো</a>
-      </div>
-
-      <p class="pps-err" role="alert" data-pps-err hidden>এই মুহূর্তে চাকা ঘোরানো যাচ্ছে না — একটু পরে আবার চেষ্টা করো।</p>
-    </div>
-  </dialog>
+  `
+  }
 
   <!-- Global scripts setup -->
   <script>
   window.BUNDLE_CHECKOUT_URL = "/payments/checkout/bundle/";
   window.ITEM_CHECKOUT_URL = "/payments/checkout/ITEM_TYPE/ITEM_SLUG/";
   window.SHOP_URL = "/products/";
-  window.PPS = {
-    data: "/offers/popup-data/",
-    spin: "/offers/spin/",
-    dismiss: "/offers/dismiss/",
-    auto: true,
-    soon: false
-  };
   </script>
 
-  <script src="/static/js/pp_spinner.js?v=1794072261" defer></script>
   <script src="/static/js/bundle.js?v=1794077047" defer></script>
   <script src="/static/js/main.js?v=1783192237" defer></script>
-
-  <script>
-  // Mobile navigation and scroll top handling
-  document.addEventListener('DOMContentLoaded', function() {
-    var mt = document.getElementById('menuToggle');
-    var mn = document.getElementById('mobNav');
-    if (mt && mn) {
-      mt.addEventListener('click', function() {
-        mn.classList.toggle('is-open');
-      });
-    }
-    var st = document.getElementById('sctop');
-    if (st) {
-      window.addEventListener('scroll', function() {
-        if (window.scrollY > 300) st.classList.add('is-visible');
-        else st.classList.remove('is-visible');
-      });
-      st.addEventListener('click', function() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    }
-  });
-  </script>
 </body>
 </html>`;
 }

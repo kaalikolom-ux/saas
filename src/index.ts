@@ -576,59 +576,16 @@ app.get("/blog/:slug/", async (c) => {
   return c.html(html);
 });
 
-// ── Offers & Wheel Spinner API ──────────────────────────────────────────────
+// ── Offers & Wheel Spinner API (Disabled as per user requirement) ───────────
 app.get("/offers/popup-data/", (c) => {
   return c.json({
-    mode: "spinner",
-    min_items: 2,
-    valid_days: 3,
-    heading: "একসাথে কিনলে বাড়তি ছাড়! 🎉",
-    subheading: "একাধিক বই একসাথে নিন, ছাড় পান আরও বেশি।",
-    segments: [
-      { label: "৫% ছাড়", value_percent: 5, color: "#22d3ee", index: 0 },
-      { label: "১০% ছাড়", value_percent: 10, color: "#34d399", index: 1 },
-      { label: "১৫% ছাড়", value_percent: 15, color: "#a78bfa", index: 2 },
-      { label: "২০% ছাড়", value_percent: 20, color: "#fbbf24", index: 3 },
-      { label: "২৫% ছাড়", value_percent: 25, color: "#f472b6", index: 4 },
-      { label: "৩০% ছাড়", value_percent: 30, color: "#7c6af7", index: 5 },
-      { label: "৫০% ছাড়", value_percent: 50, color: "#f87171", index: 6 },
-      { label: "৭৫% ছাড়", value_percent: 75, color: "#fb923c", index: 7 },
-      { label: "১০০% ছাড়", value_percent: 100, color: "#facc15", index: 8 },
-    ],
-    show: true,
-    campaign_id: 1,
+    show: false,
+    mode: "disabled",
   });
 });
 
-app.post("/offers/spin/", async (c) => {
-  const db = c.env.DB;
-  const luckyPicks = [
-    { index: 3, pct: 20 },
-    { index: 4, pct: 25 },
-    { index: 5, pct: 30 },
-  ];
-  const pick = luckyPicks[Math.floor(Math.random() * luckyPicks.length)];
-
-  await db
-    .prepare("INSERT INTO spins (campaign_id, segment_index, discount_percent) VALUES (1, ?, ?)")
-    .bind(pick.index, pick.pct)
-    .run();
-
-  setCookie(c, "spin_discount", String(pick.pct), {
-    maxAge: 86400 * 3,
-    path: "/",
-    sameSite: "Lax",
-  });
-
-  const productsRes = await db
-    .prepare("SELECT slug, title, price, discounted_price FROM products WHERE discounted_price > 0 ORDER BY price DESC")
-    .all<Product>();
-
-  return c.json({
-    segment_index: pick.index,
-    percent: pick.pct,
-    products: productsRes.results || [],
-  });
+app.post("/offers/spin/", (c) => {
+  return c.json({ ok: false, error: "Spinner is disabled." }, 403);
 });
 
 app.post("/offers/dismiss/", (c) => {
@@ -897,6 +854,7 @@ app.get("/dashboard/", async (c) => {
     title: "আমার লাইব্রেরি — notabene.saas",
     activeNav: "dashboard",
     user,
+    hideNavAndFooter: true,
     content: dashboardView({
       user,
       libraryProducts: libRes.results || [],
