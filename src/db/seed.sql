@@ -1,3 +1,7 @@
+-- Seed Admin User
+INSERT OR IGNORE INTO users (id, name, email, password_hash, role, avatar)
+VALUES (1, 'notabene.saas Admin', 'notabene.inc@gmail.com', '7d6a54ed52aa1d2bd0b34da9197cc65d3914c057502c37faaf363fce2ddf0db2', 'admin', '');
+
 -- Seed Products
 INSERT OR IGNORE INTO products (slug, title, subtitle, description, price, discounted_price, cover_image, category, badge, is_featured) VALUES ('git-o-github', 'Git ও GitHub: আদি থেকে অন্ত', 'Git ও GitHub: আদি থেকে অন্ত', 'প্রথম commit থেকে team-এ কাজ পর্যন্ত — বাংলায় Git ও GitHub-এর পূর্ণ বই। ৭ পর্ব, ২৯ অধ্যায়ে commit, branch, merge, conflict, rebase, ভুল শোধরানো, Pull Request, code review, GitHub Actions আর VPS-এ auto-deploy।', 820, 93, '/media/products/covers/Git_%E0%A6%93_GitHub__%E0%A6%86%E0%A6%A6_%E0%A6%A5%E0%A6%95_%E0%A6%85%E0%A6%A8%E0%A6%A4.jpg', 'Ebook', '', 1);
 INSERT OR IGNORE INTO products (slug, title, subtitle, description, price, discounted_price, cover_image, category, badge, is_featured) VALUES ('jadur-shohor-js', 'জাদুর শহর JS', 'জাদুর শহর JS', 'JavaScript-কে একটা শহর হিসেবে শেখা — variable মানে বাক্স, function মানে মন্ত্র, event loop মানে ঘড়িঘর। ১০ পর্ব, ৪৬ অধ্যায়ে শুরু থেকে অ্যাডভান্সড পর্যন্ত, শেষে jQuery, HTMX, Vue, React, Angular-এর একে ঝলক আর ৪টা হাতেকলমে প্রজেক্ট।', 850, 98, '/media/products/covers/js_thumb.jpg', 'Ebook', '', 1);
@@ -11,6 +15,15 @@ INSERT OR IGNORE INTO products (slug, title, subtitle, description, price, disco
 INSERT OR IGNORE INTO products (slug, title, subtitle, description, price, discounted_price, cover_image, category, badge, is_featured) VALUES ('ai-debugging-prompt-pack', 'AI Debugging Prompt Pack', 'AI Debugging Prompt Pack', 'AI-কে শুধু &quot;ফিক্স করো&quot; না বলে একবারেই ঠিক সমাধান পাওয়ার রেডি প্রম্পট — মূল debug prompt, ফলো-আপ, error বোঝা আর রান করার আগেই bug খোঁজা। ChatGPT, Gemini, Claude সবখানে চলে। ৬ পাতার ফ্রি PDF, সহজ বাংলায়।', 0, 0, '/media/products/covers/ai-debugging-prompt-pack-cover.png', 'Ebook', '', 0);
 INSERT OR IGNORE INTO products (slug, title, subtitle, description, price, discounted_price, cover_image, category, badge, is_featured) VALUES ('git-github-cheat-sheet', 'Git ও GitHub চিট শিট', 'Git ও GitHub চিট শিট', 'প্রতিদিনের ১০০-র বেশি Git ও GitHub command, ভুল শোধরানোর ছক আর সাধারণ error-এর সমাধান — এক জায়গায়, সহজ বাংলায়। প্রিন্ট করে ডেস্কের পাশে রাখার মতো ৬ পাতার ফ্রি চিট শিট।', 0, 0, '/media/products/covers/Git_%E0%A6%93_GitHub_%E0%A6%9A%E0%A6%9F_%E0%A6%B6%E0%A6%9F__%E0%A6%AC%E0%A6%B2%E0%A6%AF_%E0%A6%B8%E0%A6%B9%E0%A6%9C_%E0%A6%97%E0%A6%87%E0%A6%A1.jpg', 'Ebook', '', 0);
 INSERT OR IGNORE INTO products (slug, title, subtitle, description, price, discounted_price, cover_image, category, badge, is_featured) VALUES ('dakghore-algorithm', 'ডাকঘরে Algorithm', 'ডাকঘরে Algorithm', 'চিঠির বস্তা থেকে প্রোগ্রামিংয়ের চিন্তা — একটা ডাকঘরের গল্পে ১৩ অধ্যায়ে algorithm। Search, sort, recursion, hashing, graph, greedy, DP — সব pseudocode-এ, trace table সহ, যেকোনো ভাষায় কাজে লাগে।', 200, 29, '/media/products/covers/dak_algo.jpg', 'Ebook', '', 0);
+
+-- Seed User Library for Admin
+INSERT OR IGNORE INTO user_library (user_id, product_id, acquired_type) VALUES (1, 1, 'purchased');
+INSERT OR IGNORE INTO user_library (user_id, product_id, acquired_type) VALUES (1, 2, 'purchased');
+INSERT OR IGNORE INTO user_library (user_id, product_id, acquired_type) VALUES (1, 3, 'purchased');
+INSERT OR IGNORE INTO user_library (user_id, product_id, acquired_type) VALUES (1, 4, 'purchased');
+INSERT OR IGNORE INTO user_library (user_id, product_id, acquired_type) VALUES (1, 5, 'purchased');
+INSERT OR IGNORE INTO user_library (user_id, product_id, acquired_type) VALUES (1, 10, 'free');
+INSERT OR IGNORE INTO user_library (user_id, product_id, acquired_type) VALUES (1, 11, 'free');
 
 -- Seed Courses
 INSERT OR IGNORE INTO courses (slug, title, subtitle, description, price, discounted_price, cover_image, duration, is_enrolling) VALUES ('ai-powered-python-django-automation-developer', 'Modern AI Powered Fullstack Development', 'Python, Django, HTMX, Alpine, Cloudflare, AI Automation & Live Client Work', '৪ মাসের প্রফেশনাল ট্রেনিং ও লাইভ ক্লায়েন্ট প্রজেক্ট কাজ।', 15000, 7500, '/media/courses/covers/AI_Mission_Briefing__10x_Faster_Developer.jpg', '৪ মাস', 1);

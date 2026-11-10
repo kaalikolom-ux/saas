@@ -20,6 +20,24 @@ export interface Env {
   ASSETS?: Fetcher;
 }
 
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  password_hash: string;
+  role: "admin" | "user";
+  avatar?: string;
+  created_at?: string;
+}
+
+export interface UserLibraryItem {
+  id: number;
+  user_id: number;
+  product_id: number;
+  acquired_type: "free" | "purchased" | "saved";
+  created_at?: string;
+}
+
 export interface Product {
   id: number;
   slug: string;
@@ -33,6 +51,7 @@ export interface Product {
   badge?: string;
   rating?: number;
   is_featured?: number;
+  download_url?: string;
   created_at?: string;
 }
 

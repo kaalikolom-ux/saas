@@ -1,12 +1,20 @@
-import { Product } from "../types";
+import { Product, User } from "../types";
 
 export interface ProductsViewProps {
   products: Product[];
   currentFilter?: string;
   searchQuery?: string;
+  user?: User | null;
+  savedProductIds?: number[];
 }
 
-export function productsView({ products, currentFilter = "all", searchQuery = "" }: ProductsViewProps): string {
+export function productsView({
+  products,
+  currentFilter = "all",
+  searchQuery = "",
+  user = null,
+  savedProductIds = [],
+}: ProductsViewProps): string {
   let filtered = products;
   if (currentFilter === "free") {
     filtered = filtered.filter((p) => p.discounted_price === 0);
@@ -32,13 +40,18 @@ export function productsView({ products, currentFilter = "all", searchQuery = ""
 
   <section class="ppl-hero" aria-labelledby="pplH">
     <div class="pp-wrap">
-      <p class="pp-kicker">ডিজিটাল প্রোডাক্ট</p>
-      <h1 class="pp-h1 ppl-h1" id="pplH">বই, স্ক্রিপ্ট আর টেমপ্লেট — বাস্তব কাজ থেকে বানানো</h1>
-      <p class="pp-lede">যা শিখবে বা কিনবে, তা সরাসরি নিজের কাজে লাগাতে পারবে।</p>
+      <p class="pp-kicker">ডিজিটাল প্রোডাক্ট ও রিসোর্স</p>
+      <h1 class="pp-h1 ppl-h1" id="pplH">বই, প্লাগিন্স আর টেমপ্লেট — বাস্তব কাজ থেকে বানানো</h1>
+      <p class="pp-lede">পছন্দমতো সংগ্রহ করুন, নিজের অ্যাকাউন্টে সেভ রাখুন এবং যেকোনো সময় ডাউনলোড করুন।</p>
       
       <ul class="ppl-stats">
         <li><b>${products.length}</b><span>টি প্রোডাক্ট</span></li>
         <li><b>${freeCount}</b><span>টি একদম ফ্রি</span></li>
+        ${
+          user
+            ? `<li><b style="color:#a78bfa">${savedProductIds.length}</b><span>টি আপনার লাইব্রেরিতে সেভ করা</span></li>`
+            : `<li><a href="/auth/login" style="color:#a78bfa;font-weight:700">লগইন করুন</a><span>লাইব্রেরি সিঙ্ক করতে</span></li>`
+        }
       </ul>
     </div>
   </section>
@@ -83,11 +96,13 @@ export function productsView({ products, currentFilter = "all", searchQuery = ""
       ${filtered
         .map((p, idx) => {
           const discountPct = p.price > p.discounted_price ? Math.round(((p.price - p.discounted_price) / p.price) * 100) : 0;
+          const isSaved = savedProductIds.includes(p.id);
+
           return `
         <article class="ppl-card ${idx === 0 ? "ppl-card--wide" : ""} pp-rv" style="--i:${idx}">
           <div class="ppl-card__media">
             <img src="${p.cover_image}" alt="${escapeHtml(p.title)}" width="640" height="360" loading="lazy" decoding="async">
-            <span class="ppl-tag">Ebook / PDF</span>
+            <span class="ppl-tag">${p.category || "Ebook / PDF"}</span>
             ${
               discountPct > 0
                 ? `<span class="ppl-flags"><span class="ppl-flag">−${discountPct}%</span></span>`
@@ -95,6 +110,10 @@ export function productsView({ products, currentFilter = "all", searchQuery = ""
                 ? `<span class="ppl-flags"><span class="ppl-flag" style="background:#16a34a">ফ্রি</span></span>`
                 : ""
             }
+            
+            ${
+              p.discounted_price > 0
+                ? `
             <label class="bundle-toggle" data-bundle-toggle data-item-type="product"
                    data-item-slug="${p.slug}" data-item-title="${escapeHtml(p.title)}"
                    data-item-price="${p.discounted_price}"
@@ -102,13 +121,17 @@ export function productsView({ products, currentFilter = "all", searchQuery = ""
               <input type="checkbox" aria-label="${escapeHtml(p.title)} — কার্টে যোগ করো">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
             </label>
+            `
+                : ""
+            }
           </div>
           <div class="ppl-card__body">
-            <p class="pp-kicker">${p.badge || (p.discounted_price === 0 ? "ফ্রি রিসোর্স" : "ডিজিটাল বই")}</p>
+            <p class="pp-kicker">${p.badge || (p.discounted_price === 0 ? "ফ্রি রিসোর্স" : "ডিজিটাল প্রোডাক্ট")}</p>
             <h3 class="ppl-card__title">
               <a class="ppl-card__link" href="/products/${p.slug}/">${escapeHtml(p.title)}</a>
             </h3>
             <p class="ppl-card__desc">${escapeHtml(p.description || "")}</p>
+            
             <div class="ppl-card__foot">
               <div class="ppl-price">
                 ${
@@ -117,10 +140,25 @@ export function productsView({ products, currentFilter = "all", searchQuery = ""
                     : `<b>৳${p.discounted_price}</b>${p.price > p.discounted_price ? `<s>৳${p.price}</s>` : ""}`
                 }
               </div>
-              <a class="ppl-cta" href="/products/${p.slug}/">
-                বিস্তারিত দেখো
-                <svg class="pp-ic pp-ic--sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-              </a>
+
+              <div style="display:flex;gap:8px;align-items:center">
+                ${
+                  p.discounted_price === 0
+                    ? `
+                  <form method="post" action="/api/library/add">
+                    <input type="hidden" name="product_id" value="${p.id}">
+                    <button type="submit" class="pp-btn ${isSaved ? "pp-btn--ghost" : "pp-btn--primary"}" style="padding:6px 12px;font-size:12px;font-weight:700">
+                      ${isSaved ? "✓ সেভ করা আছে" : "📥 লাইব্রেরিতে সেভ"}
+                    </button>
+                  </form>
+                `
+                    : ""
+                }
+                <a class="ppl-cta" href="/products/${p.slug}/">
+                  বিস্তারিত
+                  <svg class="pp-ic pp-ic--sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                </a>
+              </div>
             </div>
           </div>
         </article>
